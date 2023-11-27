@@ -17,9 +17,9 @@
     <jdk.version>17</jdk.version>
     <release.version>17</release.version>
     <micronaut.version>4.2.0</micronaut.version>
-    <micronaut.runtime>netty</micronaut.runtime>
     <micronaut.aot.enabled>false</micronaut.aot.enabled>
     <micronaut.aot.packageName>edu.udemy.micronaut.aot.generated</micronaut.aot.packageName>
+    <micronaut.runtime>netty</micronaut.runtime>
     <exec.mainClass>edu.udemy.micronaut.Application</exec.mainClass>
   </properties>
 
