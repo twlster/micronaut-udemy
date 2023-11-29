@@ -5,14 +5,17 @@ import edu.udemy.micronaut.constants.Errors;
 import edu.udemy.micronaut.controller.dto.DepositFiatMoney;
 import edu.udemy.micronaut.controller.dto.Symbol;
 import edu.udemy.micronaut.controller.dto.Wallet;
+import edu.udemy.micronaut.controller.dto.WithdrawFiatMoney;
 import edu.udemy.micronaut.controller.dto.error.CustomError;
 import edu.udemy.micronaut.controller.dto.inmuable.InMemoryAccountStore;
 import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.exceptions.HttpClientException;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.json.tree.JsonNode;
+import io.micronaut.security.token.render.BearerAccessRefreshToken;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Assertions;
@@ -24,27 +27,41 @@ import java.util.Optional;
 import java.util.UUID;
 
 @MicronautTest
-class WalletControllerTest {
+class WalletControllerTest implements ILogin {
 
     @Inject
-    @Client("/accounts/wallets")
+    @Client("/")
     private HttpClient client;
 
     @Inject
     private InMemoryAccountStore inMemoryAccountStore;
+
+    private BearerAccessRefreshToken token;
 
 
     @BeforeEach
     public void init() {
         inMemoryAccountStore.deleteWatchList(Constants.ACCOUNT_ID);
         inMemoryAccountStore.deleteWallet(Constants.ACCOUNT_ID);
+        token = login(client);
     }
 
     @Test
     void getWallet() {
-        final JsonNode response = client.toBlocking().retrieve("/", JsonNode.class);
+        var request = HttpRequest.GET("/accounts/wallets").bearerAuth(token.getAccessToken());
+        final JsonNode response = client.toBlocking().retrieve(request, JsonNode.class);
         Assertions.assertNotNull(response);
         Assertions.assertEquals(0, response.size());
+    }
+
+    @Test
+    void getWallet_ko() {
+        try {
+            var request = HttpRequest.GET("/accounts/wallets");
+            client.toBlocking().exchange(request, JsonNode.class);
+        } catch(HttpClientResponseException e){
+            Assertions.assertEquals(HttpStatus.UNAUTHORIZED.getReason(), e.getMessage());
+        }
     }
 
     @Test
@@ -53,8 +70,11 @@ class WalletControllerTest {
         final DepositFiatMoney depositFiatMoney =
                 new DepositFiatMoney(Constants.ACCOUNT_ID, UUID.randomUUID(), new Symbol("EUR"), BigDecimal.TEN);
 
-        final var response =
-                client.toBlocking().exchange(HttpRequest.POST("/deposits", depositFiatMoney), Wallet.class);
+        var request =
+                HttpRequest.POST("/accounts/wallets/deposits", depositFiatMoney)
+                        .bearerAuth(token.getAccessToken());
+
+        final var response = client.toBlocking().exchange(request, Wallet.class);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(200, response.getStatus().getCode());
@@ -68,7 +88,9 @@ class WalletControllerTest {
                 new DepositFiatMoney(Constants.ACCOUNT_ID, UUID.randomUUID(), new Symbol("ABC"), BigDecimal.TEN);
 
         try {
-            client.toBlocking().exchange(HttpRequest.POST("/deposits", depositFiatMoney), CustomError.class);
+            var request =
+                    HttpRequest.POST("/accounts/wallets/deposits", depositFiatMoney)
+                            .bearerAuth(token.getAccessToken());
         } catch (HttpClientException e) {
             Optional<CustomError> response = ((HttpClientResponseException) e).getResponse().getBody(CustomError.class);
             Assertions.assertTrue(response.isPresent());
@@ -81,25 +103,31 @@ class WalletControllerTest {
     @Test
     void withdrawMoney() {
 
-        final DepositFiatMoney depositFiatMoney =
-                new DepositFiatMoney(Constants.ACCOUNT_ID, UUID.randomUUID(), new Symbol("EUR"), new BigDecimal("-100"));
+        final WithdrawFiatMoney withdrawFiatMoney =
+                new WithdrawFiatMoney(Constants.ACCOUNT_ID, UUID.randomUUID(), new Symbol("EUR"), new BigDecimal("-100"));
 
+        var request =
+                HttpRequest.POST("/accounts/wallets/withdraws", withdrawFiatMoney)
+                        .bearerAuth(token.getAccessToken());
         final var response =
-                client.toBlocking().exchange(HttpRequest.POST("/withdraws", depositFiatMoney), Wallet.class);
+                client.toBlocking().exchange(request, Wallet.class);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals(200, response.getStatus().getCode());
-        Assertions.assertEquals(depositFiatMoney.walletId(), response.getBody().get().walletId());
+        Assertions.assertEquals(withdrawFiatMoney.walletId(), response.getBody().get().walletId());
     }
 
     @Test
     void withdrawMoney_ko() {
 
-        final DepositFiatMoney depositFiatMoney =
-                new DepositFiatMoney(Constants.ACCOUNT_ID, UUID.randomUUID(), new Symbol("ABC"), new BigDecimal("-100"));
+        final WithdrawFiatMoney withdrawFiatMoney =
+                new WithdrawFiatMoney(Constants.ACCOUNT_ID, UUID.randomUUID(), new Symbol("ABC"), new BigDecimal("-100"));
 
         try {
-            client.toBlocking().exchange(HttpRequest.POST("/withdraws", depositFiatMoney), CustomError.class);
+            var request =
+                    HttpRequest.POST("/accounts/wallets/withdraws", withdrawFiatMoney)
+                            .bearerAuth(token.getAccessToken());
+            client.toBlocking().exchange(request, CustomError.class);
         } catch (HttpClientException e) {
             Optional<CustomError> response = ((HttpClientResponseException) e).getResponse().getBody(CustomError.class);
             Assertions.assertTrue(response.isPresent());

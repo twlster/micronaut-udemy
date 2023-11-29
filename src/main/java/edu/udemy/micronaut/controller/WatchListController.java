@@ -12,6 +12,8 @@ import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.Status;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 @Controller("/accounts/watchlist")
 @Tag(name = "Accounts Watchlist Api")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 public record WatchListController(InMemoryAccountStore accountStore) {
 
     private static final Logger LOG = LoggerFactory.getLogger(WatchListController.class);

@@ -1,7 +1,6 @@
 package edu.udemy.micronaut.controller;
 
 import edu.udemy.micronaut.controller.dto.Symbol;
-import edu.udemy.micronaut.controller.dto.WatchList;
 import edu.udemy.micronaut.controller.dto.error.CustomError;
 import edu.udemy.micronaut.controller.dto.inmuable.InMemoryStore;
 import io.micronaut.http.MediaType;
@@ -9,6 +8,8 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,6 +26,7 @@ import java.util.Optional;
 
 @Controller("/symbols")
 @Tag(name = "Symbols Api")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 public class SymbolController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SymbolController.class);

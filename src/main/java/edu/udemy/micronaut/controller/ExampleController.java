@@ -1,12 +1,13 @@
 package edu.udemy.micronaut.controller;
 
 import edu.udemy.micronaut.config.TranslationConfig;
-import edu.udemy.micronaut.controller.dto.Symbol;
 import edu.udemy.micronaut.controller.dto.error.CustomError;
 import edu.udemy.micronaut.service.ExampleService;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 @Controller("/micronaut-udemy")
 @Tag(name = "Micronaut Example Api")
+@Secured(SecurityRule.IS_ANONYMOUS)
 public class ExampleController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExampleController.class);

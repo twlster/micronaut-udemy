@@ -16,6 +16,8 @@ import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,6 +33,7 @@ import java.util.List;
 
 @Controller("/accounts/wallets")
 @Tag(name = "Accounts Wallet Api")
+@Secured(SecurityRule.IS_AUTHENTICATED)
 public record WalletController(InMemoryAccountStore accountStore) {
 
     private static final Logger LOG = LoggerFactory.getLogger(WalletController.class);
