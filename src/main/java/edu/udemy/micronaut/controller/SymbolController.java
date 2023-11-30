@@ -2,7 +2,7 @@ package edu.udemy.micronaut.controller;
 
 import edu.udemy.micronaut.controller.dto.Symbol;
 import edu.udemy.micronaut.controller.dto.error.CustomError;
-import edu.udemy.micronaut.controller.dto.inmuable.InMemoryStore;
+import edu.udemy.micronaut.service.SymbolService;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.inject.Inject;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,12 +27,13 @@ import java.util.Optional;
 @Controller("/symbols")
 @Tag(name = "Symbols Api")
 @Secured(SecurityRule.IS_AUTHENTICATED)
+@AllArgsConstructor
 public class SymbolController {
 
     private static final Logger LOG = LoggerFactory.getLogger(SymbolController.class);
 
-    @Inject
-    private InMemoryStore inMemoryStore;
+//    private final InMemoryStore inMemoryStore;
+    private final SymbolService symbolService;
 
     @Get(uri = "${micronaut.rest.api.symbol.url}", produces = MediaType.APPLICATION_JSON)
     @Operation(summary = "Symbols",
@@ -51,7 +52,8 @@ public class SymbolController {
     })
     public Collection<Symbol> symbols() {
         LOG.debug("Recovering all symbols");
-        return inMemoryStore.getSymbols().values();
+        //return inMemoryStore.getSymbols().values();
+        return symbolService.getAllSymbols();
     }
 
     @Get(uri = "${micronaut.rest.api.symbol.url.symbol}", produces = MediaType.APPLICATION_JSON)
@@ -71,7 +73,8 @@ public class SymbolController {
     })
     public Symbol symbol(@PathVariable("symbol") String symbol) {
         LOG.debug("Recovering the symbol {}", symbol);
-        return inMemoryStore.getSymbols().get(symbol);
+       // return inMemoryStore.getSymbols().get(symbol);
+        return symbolService.getSymbolByValue(symbol);
     }
 
     @Get(uri = "${micronaut.rest.api.symbol.url.filter}", produces = MediaType.APPLICATION_JSON)
@@ -91,7 +94,12 @@ public class SymbolController {
     })
     public Collection<Symbol> filter(@QueryValue("max") Optional<Integer> max, @QueryValue("offset") Optional<Integer> offset) {
         LOG.debug("Recovering all the symbol filtered by max {} and offset {}", max, offset);
-        return inMemoryStore.getSymbols().values()
+/*        return inMemoryStore.getSymbols().values()
+                .stream()
+                .skip(offset.orElse(0))
+                .limit(max.orElse(10))
+                .toList();*/
+        return symbolService.getAllSymbols()
                 .stream()
                 .skip(offset.orElse(0))
                 .limit(max.orElse(10))

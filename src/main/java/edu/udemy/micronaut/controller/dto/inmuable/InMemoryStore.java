@@ -37,7 +37,7 @@ public class InMemoryStore {
     }
 
     private void addNewSymbol(){
-        var symbol = new Symbol(faker.stock().nsdqSymbol());
+        var symbol = new Symbol(faker.stock().hashCode(), faker.stock().nsdqSymbol());
         symbols.put(symbol.value(), symbol);
         LOG.debug("Added Symbol: {}", symbol);
     }

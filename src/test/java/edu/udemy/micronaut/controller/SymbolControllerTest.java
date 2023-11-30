@@ -29,7 +29,7 @@ class SymbolControllerTest implements ILogin{
 
     @BeforeEach
     public void init(){
-        inMemoryStore.init(10);
+        //inMemoryStore.init(10);
         token = login(client);
     }
 
@@ -38,7 +38,8 @@ class SymbolControllerTest implements ILogin{
         var request = HttpRequest.GET("/symbols").bearerAuth(token.getAccessToken());
         var response = client.toBlocking().exchange(request, JsonNode.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatus());
-        Assertions.assertEquals(10, response.getBody().get().size());
+//        Assertions.assertEquals(10, response.getBody().get().size());
+        Assertions.assertEquals(4, response.getBody().get().size());
     }
 
     @Test
@@ -53,7 +54,7 @@ class SymbolControllerTest implements ILogin{
 
     @Test
     void symbol() {
-        Symbol firstSymbol = new Symbol("TEST");
+        Symbol firstSymbol = new Symbol("APPL");
         inMemoryStore.getSymbols().put(firstSymbol.value(), firstSymbol);
 
         var request = HttpRequest.GET("/symbols/"+firstSymbol.value()).bearerAuth(token.getAccessToken());
@@ -67,7 +68,8 @@ class SymbolControllerTest implements ILogin{
         var request = HttpRequest.GET("/symbols/filter?max=5&offset=7").bearerAuth(token.getAccessToken());
         var response = client.toBlocking().exchange(request, JsonNode.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatus());
-        Assertions.assertEquals(3, response.getBody().get().size());
+//        Assertions.assertEquals(3, response.getBody().get().size());
+        Assertions.assertEquals(0, response.getBody().get().size());
     }
 
     @Test
@@ -75,7 +77,8 @@ class SymbolControllerTest implements ILogin{
         var request = HttpRequest.GET("/symbols/filter?max=5").bearerAuth(token.getAccessToken());
         var response = client.toBlocking().exchange(request, JsonNode.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatus());
-        Assertions.assertEquals(5, response.getBody().get().size());
+//        Assertions.assertEquals(5, response.getBody().get().size());
+        Assertions.assertEquals(4, response.getBody().get().size());
     }
 
     @Test
@@ -83,7 +86,8 @@ class SymbolControllerTest implements ILogin{
         var request = HttpRequest.GET("/symbols/filter?offset=7").bearerAuth(token.getAccessToken());
         var response = client.toBlocking().exchange(request, JsonNode.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatus());
-        Assertions.assertEquals(3, response.getBody().get().size());
+//        Assertions.assertEquals(3, response.getBody().get().size());
+        Assertions.assertEquals(0, response.getBody().get().size());
     }
 
 }

@@ -22,6 +22,7 @@
     <micronaut.runtime>netty</micronaut.runtime>
     <exec.mainClass>edu.udemy.micronaut.Application</exec.mainClass>
     <lombok.version>1.18.30</lombok.version>
+    <micronaut.data.version>4.3.1</micronaut.data.version>
   </properties>
 
   <repositories>
@@ -108,6 +109,24 @@
       <groupId>io.micronaut.security</groupId>
       <artifactId>micronaut-security-annotations</artifactId>
     </dependency>
+    <!--DB-->
+    <dependency>
+      <groupId>io.micronaut.flyway</groupId>
+      <artifactId>micronaut-flyway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.micronaut.data</groupId>
+      <artifactId>micronaut-data-hibernate-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.micronaut.sql</groupId>
+      <artifactId>micronaut-jdbc-hikari</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -129,11 +148,31 @@
           <!-- Uncomment to enable incremental compilation -->
           <!-- <useIncrementalCompilation>false</useIncrementalCompilation> -->
           <fork>true</fork>
-          <annotationProcessorPaths combine.children="append">
+          <annotationProcessorPaths combine.children="override">
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+            <path>
+              <groupId>io.micronaut</groupId>
+              <artifactId>micronaut-inject-java</artifactId>
+              <version>${micronaut.core.version}</version>
+            </path>
+            <path>
+              <groupId>io.micronaut</groupId>
+              <artifactId>micronaut-graal</artifactId>
+              <version>${micronaut.core.version}</version>
+            </path>
             <path>
               <groupId>io.micronaut</groupId>
               <artifactId>micronaut-http-validation</artifactId>
               <version>${micronaut.core.version}</version>
+            </path>
+            <path>
+              <groupId>io.micronaut.data</groupId>
+              <artifactId>micronaut-data-processor</artifactId>
+              <version>${micronaut.data.version}</version>
             </path>
             <path>
               <groupId>io.micronaut.openapi</groupId>
@@ -156,11 +195,6 @@
                   <artifactId>micronaut-inject</artifactId>
                 </exclusion>
               </exclusions>
-            </path>
-            <path>
-              <groupId>org.projectlombok</groupId>
-              <artifactId>lombok</artifactId>
-              <version>${lombok.version}</version>
             </path>
           </annotationProcessorPaths>
           <compilerArgs>
