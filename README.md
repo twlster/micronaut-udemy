@@ -7,6 +7,16 @@
 ---
 
 - [Micronaut Maven Plugin documentation](https://micronaut-projects.github.io/micronaut-maven-plugin/latest/)
+---
+## Before starting remember to create a postgres DB with these parameters:
+ 
+POSTGRES_PASSWORD=secret \
+POSTGRES_DB=mn-stock-broker
+
+### In case of using Docker, use this command:
+
+docker run --name my-postgres -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=mn-stock-broker -p 5432:5432 -d postgres:12.4
+
 ## Feature serialization-jackson documentation
 
 - [Micronaut Serialization Jackson Core documentation](https://micronaut-projects.github.io/micronaut-serialization/latest/guide/)
@@ -34,5 +44,3 @@
 - [Micronaut Swagger UI documentation](https://micronaut-projects.github.io/micronaut-openapi/latest/guide/index.html)
 
 - [https://swagger.io/tools/swagger-ui/](https://swagger.io/tools/swagger-ui/)
-
-

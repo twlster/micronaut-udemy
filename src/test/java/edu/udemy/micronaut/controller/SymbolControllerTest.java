@@ -54,7 +54,7 @@ class SymbolControllerTest implements ILogin{
 
     @Test
     void symbol() {
-        Symbol firstSymbol = new Symbol("APPL");
+        Symbol firstSymbol = new Symbol(1, "APPL");
         inMemoryStore.getSymbols().put(firstSymbol.value(), firstSymbol);
 
         var request = HttpRequest.GET("/symbols/"+firstSymbol.value()).bearerAuth(token.getAccessToken());
